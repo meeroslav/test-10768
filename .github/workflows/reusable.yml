@@ -1,0 +1,52 @@
+name: CI Reusable Test
+
+on:
+  workflow_call:
+    inputs:
+      environment-variables:
+        required: false
+        type: string
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    # The name of the job which will invoke this one is expected to be "Nx Cloud - Main Job", and whatever we call this will be appended
+    # to that one after a forward slash, so we keep this one intentionally short to produce "Nx Cloud - Main Job / Run" in the Github UI
+    name: Run
+    steps:
+      - name: Process environment-variables
+        uses: actions/github-script@v6
+        id: env_vars_config
+        env:
+          ENV_VARS: ${{ inputs.environment-variables }}
+        with:
+          script: |
+            const { execSync } = require('child_process');
+
+            const varsStr = process.env.ENV_VARS || '';
+            const vars = varsStr
+              .split('\n')
+              .map(variable => variable.trim())
+              .filter(variable => variable.length > 0 && variable.indexOf(':') > 0)
+              .map(variable => ({
+                name: variable.split(':')[0],
+                value: variable.slice(variable.indexOf(':') + 1)
+              }));
+            console.log(vars);
+
+            execSync(`echo "MY_VAR='Some text'" >> $GITHUB_ENV`);
+
+            return
+          result-encoding: string
+      - name: Read values from env
+        shell: bash
+        run: |
+          echo "BASE: ${{ env.MY_VAR }}"
+      # - name: Feed environment variables to env
+      #   shell: bash
+      #   run: |
+      #     if [ "${{ steps.env_vars_config }}" != [] ]; then
+      #       echo "NX_BASE=${{ steps.setSHAs.outputs.base }}" >> $GITHUB_ENV
+      #       echo "NX_HEAD=${{ steps.setSHAs.outputs.head }}" >> $GITHUB_ENV
+      #       echo "NX_BASE and NX_HEAD environment variables have been set for the current Job"
+      #     fi

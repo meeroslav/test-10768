@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  main:
+    name: Nx Cloud - Main Job
+    uses: ./.github/workflows/reusable.yml
+    with:
+      SOMETHING: some text
+      ELSE: true
+      MAKE_MY_DAY: 42
+      TEXT_ENCAPSULATED: 'some text'
