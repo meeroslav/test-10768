@@ -16,9 +16,9 @@ jobs:
     name: Nx Cloud - Main Job
     uses: ./.github/workflows/reusable.yml
     with:
-      environment-variables:
-        SOMETHING: some text
-        ELSE: true
-        MAKE_MY_DAY: 42
-        TEXT_ENCAPSULATED: 'some text'
-        TEXT_OTHER: 'something else'
+      environment-variables: |
+        ELSE =true
+        MAKE_MY_DAY= 42
+        TEXT_ENCAPSULATED=some "text"
+        TEXT_OTHER = something's else
+        NX=RULEZ

@@ -23,30 +23,41 @@ jobs:
           script: |
             const { execSync } = require('child_process');
 
+            // trim spaces and escape quotes
+            const cleanStr = str => str
+              .trim()
+              .replaceAll(/'/g, "\'")
+              .replaceAll(/"/g, '\\\"');
+
+            const parseStr = str =>
+              str === 'true' || str === 'TRUE'
+                ? true
+                : str === 'false' || str === 'FALSE'
+                  ? false
+                  : isNaN(str)
+                    ? str
+                    : parseFloat(str);
+
+            const addWorkflowEnvVar = v => {
+              execSync(`echo "${v.name}=${parseStr(v.value)}" >> $GITHUB_ENV`);
+            }
+
             const varsStr = process.env.ENV_VARS || '';
             const vars = varsStr
               .split('\n')
               .map(variable => variable.trim())
-              .filter(variable => variable.length > 0 && variable.indexOf(':') > 0)
+              .filter(variable => variable.indexOf('=') > 0)
               .map(variable => ({
-                name: variable.split(':')[0],
-                value: variable.slice(variable.indexOf(':') + 1)
+                name: cleanStr(variable.split('=')[0]),
+                value: cleanStr(variable.slice(variable.indexOf('=') + 1))
               }));
-            console.log(vars);
 
-            execSync(`echo "MY_VAR='Some text'" >> $GITHUB_ENV`);
-
-            return
-          result-encoding: string
+            vars.forEach(addWorkflowEnvVar);
       - name: Read values from env
         shell: bash
         run: |
-          echo "BASE: ${{ env.MY_VAR }}"
-      # - name: Feed environment variables to env
-      #   shell: bash
-      #   run: |
-      #     if [ "${{ steps.env_vars_config }}" != [] ]; then
-      #       echo "NX_BASE=${{ steps.setSHAs.outputs.base }}" >> $GITHUB_ENV
-      #       echo "NX_HEAD=${{ steps.setSHAs.outputs.head }}" >> $GITHUB_ENV
-      #       echo "NX_BASE and NX_HEAD environment variables have been set for the current Job"
-      #     fi
+          echo "ELSE: ${{ env.ELSE }}"
+          echo "MAKE_MY_DAY: ${{ env.MAKE_MY_DAY }}"
+          echo "TEXT_ENCAPSULATED: ${{ env.TEXT_ENCAPSULATED }}"
+          echo "TEXT_OTHER: ${{ env.TEXT_OTHER }}"
+          echo "NX ${{ env.NX }}"
