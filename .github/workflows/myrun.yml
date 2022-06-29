@@ -19,3 +19,4 @@ jobs:
       ELSE: true
       MAKE_MY_DAY: 42
       TEXT_ENCAPSULATED: 'some text'
+      TEXT_OTHER: 'something else'
