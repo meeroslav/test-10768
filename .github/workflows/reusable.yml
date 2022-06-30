@@ -6,6 +6,13 @@ on:
       environment-variables:
         required: false
         type: string
+    secrets:
+      NX_CLOUD_ACCESS_TOKEN:
+        required: false
+      NX_CLOUD_AUTH_TOKEN:
+        required: false
+      NX_OTHER:
+        required: false
 
 jobs:
   main:
@@ -61,3 +68,5 @@ jobs:
           echo "TEXT_ENCAPSULATED: ${{ env.TEXT_ENCAPSULATED }}"
           echo "TEXT_OTHER: ${{ env.TEXT_OTHER }}"
           echo "NX ${{ env.NX }}"
+          echo "TOKEN ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}"
+          echo "OTHER ${{ secrets.NX_OTHER }}"

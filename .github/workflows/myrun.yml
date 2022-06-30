@@ -15,6 +15,7 @@ jobs:
   main:
     name: Nx Cloud - Main Job
     uses: ./.github/workflows/reusable.yml
+    secrets: inherit
     with:
       environment-variables: |
         ELSE =true
